@@ -122,67 +122,46 @@ def finish_deposit():
     file.close()
     current_balance_label.config(text= "Số dư : $ "+ str(update_balance), fg="green")
     deposit_notif.config(text = "Nạp tiền thành công", fg = "green")
-
 def finish_transfer():
     if transfer_amount.get() == "":
-        transfer_notif.config(text = "Vui lòng nhập số tiền ", fg = "red")
+        transfer_notif.config(text="Vui lòng nhập số tiền", fg="red")
         return
-    if float(transfer_amount.get()) <= 0 :
-        transfer_notif.config(text = "Giao dịch không thành công !", fg ="red")
+    if float(transfer_amount.get()) <= 0:
+        transfer_notif.config(text="Giao dịch không thành công!", fg="red")
         return
+
     global name_account
     global login_account
-    global num_acc
-    # in4 user
+
+    # Thông tin người chuyển
     file = open(login_account, "r+")
-    file_data = file.read()
-    all_account = os.listdir()
-    details = file_data.split('\n')
-    current_balance = details[6]
-    initial_balance = current_balance
-    #guest
+    file_data = file.readlines()
+    file.seek(0)
+
+    current_balance = float(file_data[6].strip())
+    updated_balance = current_balance - float(transfer_amount.get())
+    file_data[6] = str(updated_balance) + "\n"
+
+    file.writelines(file_data)
+    file.truncate()
+    file.close()
+
+    # Thông tin người nhận
     name_account_guest = name_account.get()
-    file_guest = open(name_account_guest,"r+")
-    file_data_guest = file_guest.read()
-    all_account_guest = os.listdir()
-    details_guest = file_data_guest.split('\n')
-    current_balance_guest = details_guest[6]
-    check_num_account = details_account.get()
-    
-    print(current_balance)
-    update_balance_guest = current_balance_guest
-    update_balance = float(initial_balance) - float(transfer_amount.get())
-    print(update_balance)
-    update_balance_guest = float(update_balance_guest) + float(transfer_amount.get())
-    for acc in all_account_guest:
-        if acc == name_account_guest:
-            file = open(acc, "r+")
-            tmp_file = file_guest.read()
-            tmp_file = file_data_guest.split('\n')
-            num_acc = tmp_file[5]
-            print(num_acc)
-        if float(transfer_amount.get()) > float(current_balance):
-            transfer_notif.config(text = "Số dư không dủ", fg = "red")
-            return
-    if num_acc ==  check_num_account:
-        transfer_current_balance_label.config(text= "Số dư : $ "+ str(update_balance), fg="green")
-        transfer_notif.config(text = "Chuyển tiền thành công", fg = "green")
-        file_data = file_data.replace(str(initial_balance), str(update_balance))
-        file.seek(0)
-        file.truncate(0)
-        file.write(file_data)
-        file.close()
+    file_guest = open(name_account_guest, "r+")
+    file_data_guest = file_guest.readlines()
+    file_guest.seek(0)
 
-        file_data_guest = file_data_guest.replace(current_balance_guest, str(update_balance_guest))
-        file_guest.seek(0)
-        file_guest.truncate(0)
-        file_guest.write(file_data_guest)
-        file_guest.close()
-        return
-    else:
-        transfer_notif.config(text ="Số tài khoản không hợp lệ")
-        return
+    current_balance_guest = float(file_data_guest[6].strip())
+    updated_balance_guest = current_balance_guest + float(transfer_amount.get())
+    file_data_guest[6] = str(updated_balance_guest) + "\n"
 
+    file_guest.writelines(file_data_guest)
+    file_guest.truncate()
+    file_guest.close()
+
+    transfer_current_balance_label.config(text="Số dư: $ " + str(updated_balance), fg="green")
+    transfer_notif.config(text="Chuyển tiền thành công", fg="green")
 def transfer():
     global name_account
     global transfer_amount 
