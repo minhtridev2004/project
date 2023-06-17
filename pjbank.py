@@ -133,7 +133,7 @@ def finish_transfer():
     global name_account
     global login_account
 
-    # Thông tin người chuyển
+    # guest
     file = open(login_account, "r+")
     file_data = file.readlines()
     file.seek(0)
@@ -146,7 +146,7 @@ def finish_transfer():
     file.truncate()
     file.close()
 
-    # Thông tin người nhận
+    # user
     name_account_guest = name_account.get()
     file_guest = open(name_account_guest, "r+")
     file_data_guest = file_guest.readlines()
