@@ -7,17 +7,28 @@ master = Tk()
 master.title('TN banking')
 master.configure(bg="white")
 #var
-first_account_number =int( '0' * 2)
 #Function
-
+def num_account_user():
+    try:
+        with open('num_acc_user.txt', 'r') as file:
+            num_acc_user = int(file.read())
+    except FileNotFoundError:
+        num_acc_user = 1
+    
+    account = str(num_acc_user).zfill(8)
+    
+    with open('num_acc_user.txt', 'w') as file:
+        file.write(str(num_acc_user + 1))
+    return account
 def finish_reg():
-
+    global check_ac_reg
+    check_ac_reg = 0
     name = temp_name.get()
     age = temp_age.get()
     gender = temp_gender.get()
     account = temp_account.get()
     password = temp_password.get()
-    num_account = temp_num_account.get()
+    num_account = temp_num_account
     all_account = os.listdir()
     if name == "" or age == "" or gender == "" or account == "" or password == "" or num_account=="":
         notif.config(fg="red", text = "Vui lòng điền đầy đủ thông tin ")
@@ -36,6 +47,7 @@ def finish_reg():
     new_file.write('0')
     new_file.close()
     notif.config(fg="green", text ="Tài khoản được tạo thành công")
+    check_ac_reg = 1
     delay_time = 200
     register_screen.after(delay_time, register_screen.destroy)
 
@@ -53,9 +65,9 @@ def register():
     temp_gender = StringVar()
     temp_account = StringVar()
     temp_password = StringVar()
-    temp_num_account = StringVar()
+    temp_num_account = num_account_user()
     #screen
-    register_screen = Toplevel(master)
+    register_screen = Toplevel(master,width=40)
     register_screen.title("Đăng kí")
     register_screen.configure(bg="white")
     #label
@@ -64,8 +76,7 @@ def register():
     Label(register_screen, text = "Tuổi", font = ('Calibri, 12'),bg="white").grid(row = 2, sticky = W)
     Label(register_screen, text = "Giới tính", font = ('Calibri, 12'),bg="white").grid(row = 3, sticky = W)
     Label(register_screen, text = "Tên tài khoản", font = ('Calibri, 12'),bg="white").grid(row = 4, sticky = W)
-    Label(register_screen, text = "Số điện thoại", font = ('Calibri, 12'),bg="white").grid(row = 5, sticky = W)
-    Label(register_screen, text = "Mật khẩu", font = ('Calibri, 12'),bg="white").grid(row = 6, sticky = W)
+    Label(register_screen, text = "Mật khẩu", font = ('Calibri, 12'),bg="white").grid(row = 5, sticky = W)
     notif = Label(register_screen,font = ('Calibri, 12'),bg="white")
     notif.grid(row = 7, sticky = N, pady = 10)
     #entries
@@ -73,10 +84,9 @@ def register():
     Entry(register_screen,textvariable=temp_age).grid(row = 2, column=1)
     Entry(register_screen,textvariable=temp_gender).grid(row = 3, column=1)
     Entry(register_screen,textvariable=temp_account).grid(row = 4, column=1)
-    Entry(register_screen,textvariable=temp_num_account).grid(row = 5, column=1)
-    Entry(register_screen,textvariable=temp_password,show='*').grid(row = 6, column=1)
-    #buttons
+    Entry(register_screen,textvariable=temp_password,show='*').grid(row = 5, column=1)
     Button(register_screen, text ="Đăng kí", command= finish_reg , font = ('Calibri', 12),bg="grey").grid(row = 7, stick = N, pady = 10)
+    #buttons
 
 def infor():
     file = open(login_account , "r")
